@@ -17,16 +17,20 @@ def normalized_ssd(img_a, img_b):
 
 
 def evaluate(original_path, small_path):
-    original = cv2.imread(original_path, cv2.IMREAD_GRAYSCALE)
-    small    = cv2.imread(small_path,    cv2.IMREAD_GRAYSCALE)
+    original_bgr = cv2.imread(original_path)
+    small_bgr    = cv2.imread(small_path)
 
-    if original is None:
+    if original_bgr is None:
         raise FileNotFoundError(f"Could not load '{original_path}'")
-    if small is None:
+    if small_bgr is None:
         raise FileNotFoundError(f"Could not load '{small_path}'")
 
-    H, W = original.shape
-    h, w = small.shape
+    # Convert BGR → RGB for display
+    original = cv2.cvtColor(original_bgr, cv2.COLOR_BGR2RGB)
+    small    = cv2.cvtColor(small_bgr,    cv2.COLOR_BGR2RGB)
+
+    H, W = original.shape[:2]
+    h, w = small.shape[:2]
     s = W / w   # scale factor to match original size
 
     zoomed_nn = zoom(small, s=s, method='nearest')
@@ -62,19 +66,19 @@ for orig_path, small_path in pairs:
 
     fig, axes = plt.subplots(1, 4, figsize=(20, 5))
 
-    axes[0].imshow(original, cmap='gray')
+    axes[0].imshow(original, cmap=None)
     axes[0].set_title(f'Original\n{original.shape[1]}×{original.shape[0]}')
     axes[0].axis('off')
 
-    axes[1].imshow(small, cmap='gray')
+    axes[1].imshow(small, cmap=None)
     axes[1].set_title(f'Small\n{small.shape[1]}×{small.shape[0]}')
     axes[1].axis('off')
 
-    axes[2].imshow(zoomed_nn, cmap='gray')
+    axes[2].imshow(zoomed_nn, cmap=None)
     axes[2].set_title(f'Nearest (s={s:.2f})\nSSD={ssd_nn:.2f}')
     axes[2].axis('off')
 
-    axes[3].imshow(zoomed_bl, cmap='gray')
+    axes[3].imshow(zoomed_bl, cmap=None)
     axes[3].set_title(f'Bilinear (s={s:.2f})\nSSD={ssd_bl:.2f}')
     axes[3].axis('off')
 
