@@ -32,30 +32,60 @@ Gx_display   = normalize(Gx)
 Gy_display   = normalize(Gy)
 Gmag_display = normalize(G_mag)
 
-# Plot
-fig, axes = plt.subplots(1, 4, figsize=(20, 5))
+# --- Sobel gradients via OpenCV ---
+Sx = cv2.Sobel(img, ddepth=cv2.CV_32F, dx=1, dy=0, ksize=5)
+Sy = cv2.Sobel(img, ddepth=cv2.CV_32F, dx=0, dy=1, ksize=5)
+S_mag = np.sqrt(Sx**2 + Sy**2)
 
-axes[0].imshow(img, cmap='gray')
-axes[0].set_title('Original')
-axes[0].axis('off')
+Sx_display   = normalize(Sx)
+Sy_display   = normalize(Sy)
+Smag_display = normalize(S_mag)
 
-axes[1].imshow(Gx_display, cmap='gray')
-axes[1].set_title('Horizontal Gradient (Gx)\ndG/dx')
-axes[1].axis('off')
+# --- Plot: Derivative-of-Gaussian row ---
+fig, axes = plt.subplots(2, 4, figsize=(20, 10))
 
-axes[2].imshow(Gy_display, cmap='gray')
-axes[2].set_title('Vertical Gradient (Gy)\ndG/dy')
-axes[2].axis('off')
+axes[0, 0].imshow(img, cmap='gray')
+axes[0, 0].set_title('Original')
+axes[0, 0].axis('off')
 
-axes[3].imshow(Gmag_display, cmap='gray')
-axes[3].set_title('Gradient Magnitude\n√(Gx² + Gy²)')
-axes[3].axis('off')
+axes[0, 1].imshow(Gx_display, cmap='gray')
+axes[0, 1].set_title('DoG — Gx (dG/dx)')
+axes[0, 1].axis('off')
+
+axes[0, 2].imshow(Gy_display, cmap='gray')
+axes[0, 2].set_title('DoG — Gy (dG/dy)')
+axes[0, 2].axis('off')
+
+axes[0, 3].imshow(Gmag_display, cmap='gray')
+axes[0, 3].set_title('DoG — Gradient Magnitude')
+axes[0, 3].axis('off')
+
+# --- Plot: Sobel row ---
+axes[1, 0].imshow(img, cmap='gray')
+axes[1, 0].set_title('Original')
+axes[1, 0].axis('off')
+
+axes[1, 1].imshow(Sx_display, cmap='gray')
+axes[1, 1].set_title('Sobel — Sx')
+axes[1, 1].axis('off')
+
+axes[1, 2].imshow(Sy_display, cmap='gray')
+axes[1, 2].set_title('Sobel — Sy')
+axes[1, 2].axis('off')
+
+axes[1, 3].imshow(Smag_display, cmap='gray')
+axes[1, 3].set_title('Sobel — Gradient Magnitude')
+axes[1, 3].axis('off')
 
 plt.tight_layout()
 plt.savefig('outputs/image_gradients_output.png', dpi=150, bbox_inches='tight')
 plt.show()
 
-cv2.imwrite('outputs/gradient_x.png', Gx_display)
-cv2.imwrite('outputs/gradient_y.png', Gy_display)
-cv2.imwrite('outputs/gradient_magnitude.png', Gmag_display)
-print("Done. Outputs saved: gradient_x.png, gradient_y.png, gradient_magnitude.png, image_gradients_output.png")
+cv2.imwrite('outputs/gradient_dog_x.png', Gx_display)
+cv2.imwrite('outputs/gradient_dog_y.png', Gy_display)
+cv2.imwrite('outputs/gradient_dog_magnitude.png', Gmag_display)
+cv2.imwrite('outputs/gradient_sobel_x.png', Sx_display)
+cv2.imwrite('outputs/gradient_sobel_y.png', Sy_display)
+cv2.imwrite('outputs/gradient_sobel_magnitude.png', Smag_display)
+
+print("Done. Outputs saved to outputs/.")
