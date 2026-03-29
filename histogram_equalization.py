@@ -3,18 +3,38 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+def equalize_channel(channel):
+    """
+    Equalize a single grayscale channel using the CDF-based formula:
+        s(r) = round((cdf(r) - cdf_min) / (N - cdf_min) * 255)
+    where N is the total number of pixels and cdf_min is the smallest
+    non-zero CDF value.
+    """
+    hist, _ = np.histogram(channel.ravel(), bins=256, range=(0, 256))
+    cdf = hist.cumsum()
+    cdf_min = cdf[cdf > 0].min()
+    N = channel.size
+
+    lut = np.zeros(256, dtype=np.uint8)
+    for i in range(256):
+        if cdf[i] > 0:
+            lut[i] = round((cdf[i] - cdf_min) / (N - cdf_min) * 255)
+
+    return lut[channel]
+
+
 def equalize_histogram(img):
     """
-    Equalize the histogram of a grayscale image.
+    Equalize the histogram of an image.
     For color images, converts to L*a*b* and equalizes only the L* channel
     to avoid hue/saturation distortion.
     """
     if len(img.shape) == 2:
-        return cv2.equalizeHist(img)
+        return equalize_channel(img)
 
     lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
     L, a, b = cv2.split(lab)
-    L_eq = cv2.equalizeHist(L)
+    L_eq = equalize_channel(L)
     return cv2.cvtColor(cv2.merge([L_eq, a, b]), cv2.COLOR_LAB2BGR)
 
 
