@@ -1,7 +1,7 @@
 import cv2
 import matplotlib.pyplot as plt
 
-imgPath = 'images/woman_open_window.png'
+imgPath = 'images/woman_open_window.jpg'
 img = cv2.imread(imgPath)
 if img is None:
     raise FileNotFoundError(f"Could not load '{imgPath}'. Check the file path.")
