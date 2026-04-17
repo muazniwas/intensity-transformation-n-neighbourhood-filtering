@@ -91,3 +91,22 @@ plt.show()
 
 cv2.imwrite('outputs/homomorphic_filtered.png', corrected)
 print("Done. Outputs saved: homomorphic_filtered.png, homomorphic_filter_output.png")
+
+print("""
+Observations on highlights_and_shadows.jpg
+-------------------------------------------
+Illumination correction:
+  γL=0.5 over-suppresses the low-frequency illumination — the bright white
+  dress dominates this band, pulling the entire output very dark. The
+  illumination gradient is reduced but at the cost of overall brightness.
+
+Contrast enhancement:
+  The figure's silhouette and pleated dress hem remain discernible, showing
+  that γH=2.0 preserves high-frequency structure. However, the darkness
+  makes the enhancement hard to appreciate visually.
+
+Artifacts:
+  - Over-darkening: the most visible issue; γL=0.5 is too aggressive here.
+  - Ringing: jagged edges along the dress hem from frequency truncation at D0.
+  - Tonal loss: the white dress and sandy ground collapse to near-black.
+""")
